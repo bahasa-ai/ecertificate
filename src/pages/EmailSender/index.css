@@ -1,0 +1,9 @@
+.ant-space.space {
+  display: flex;
+  /* margin-bottom: 5px; */
+  justify-content: flex-start;
+}
+
+.ant-space.space > .ant-space-item:nth-child(1) {
+  flex-grow: 0.8;
+}
