@@ -1,8 +1,8 @@
 import { UploadOutlined } from '@ant-design/icons'
 import { Document, Image as ImagePDF, Page, PDFViewer, StyleSheet, Text, View } from '@react-pdf/renderer'
-import { Button, Col, Form, Input, Row, Upload } from 'antd'
+import { Button, Col, Form, Input, Row, Select, Space, Upload } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Header from '../../components/Header'
 
 const styles = StyleSheet.create({
@@ -29,11 +29,28 @@ const Ecertificate: React.FC = () => {
   const [template, setTemplate] = useState<any>()
   const [file, setFile] = useState<any>()
   const [img, setImg] = useState<string>()
+  const [textStyle, setTextStyle] = useState<any>()
   const [dimension, setDimenstion] = useState<[number, number]>()
   const [form] = useForm()
 
-  const onFinish = async () => {
+  useEffect(() => {
+    form.setFieldsValue({
+      paddingLeft: 0,
+      paddingTop: 800,
+      fontSize: 189,
+      align: 'center'
+    })
+  }, [])
 
+  const onFinish = async () => {
+    const { text, paddingLeft, paddingTop, fontSize, align } = form.getFieldsValue()
+    setTextStyle({
+      fontSize,
+      paddingTop: `${paddingTop}px`,
+      paddingLeft: `${paddingLeft}px`,
+      textAlign: align,
+    })
+    setTemplate(text)
   }
 
   const onFile = (file: any) => {
@@ -44,7 +61,6 @@ const Ecertificate: React.FC = () => {
       img.onload = () => {
         setDimenstion([img.width, img.height])
         setImg(reader.result as string)
-        setTemplate('aoisnais')
       }
       img.src = reader.result as string
       console.log(`url(${reader.result})`)
@@ -58,7 +74,9 @@ const Ecertificate: React.FC = () => {
       <Document>
         <Page size={{ width: dimension?.[0] as number, height: dimension?.[1] as number }} style={styles.page}>
           <ImagePDF src={img} style={styles.pageBackground} />
-          <Text>Gilang</Text>
+          <View style={styles.section}>
+            <Text style={textStyle}>{template}</Text>
+          </View>
         </Page>
       </Document>
     </PDFViewer> : <>
@@ -74,6 +92,27 @@ const Ecertificate: React.FC = () => {
               </Form.Item>
               <Form.Item name="text" label="Text">
                 <Input size="large" />
+              </Form.Item>
+              <Space>
+                <Form.Item name="fontSize" label="Font Size">
+                  <Input type="number" />
+                </Form.Item>
+                <Form.Item name="paddingLeft" label="Left">
+                  <Input type="number" />
+                </Form.Item>
+                <Form.Item name="paddingTop" label="Top">
+                  <Input type="number" />
+                </Form.Item>
+                <Form.Item name="align" label="Align">
+                  <Select>
+                    <Select.Option value="left">Left</Select.Option>
+                    <Select.Option value="center">Center</Select.Option>
+                    <Select.Option value="right">right</Select.Option>
+                  </Select>
+                </Form.Item>
+              </Space>
+              <Form.Item>
+                <Button htmlType="submit" type="primary" style={{ float: 'right' }}>Generate</Button>
               </Form.Item>
             </Col>
           </Row>
