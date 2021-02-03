@@ -16,12 +16,16 @@ export class Email {
     return Email.client
   }
 
-  public async sendEmail(to: string, subject: string, html: string, params?: any): Promise<any> {
+  public async sendEmail(to: string, subject: string, html: string, attachment?: any, params?: any): Promise<any> {
     return await this.transporter.sendMail({
       subject: Mustache.render(subject, params),
       to,
       from: this.options!.from,
-      html: Mustache.render(html, params)
+      html: Mustache.render(html, params),
+      ...attachment ? { attachments: [
+          attachment
+        ]
+      } : {}
     })
   }
 }

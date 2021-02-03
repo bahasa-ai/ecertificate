@@ -2,19 +2,30 @@ require('dotenv').config()
 
 import bodyParser from 'body-parser'
 import express, { static as serveStatic } from 'express'
+import multer from 'multer'
 import path from 'path'
 import { Email } from './service/Email'
 
 const app = express()
 
 app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }))
 
 app.get('/ping', (_, res) => res.send({ pong: true }))
 
-app.post('/api/send', async (req, res) => {
-  const { to, subject, content, params } = req.body
+
+const upload = multer({ storage: multer.memoryStorage() })
+app.post('/api/send', upload.single('file'), async (req, res) => {
+  const { to, subject, content, ...rest } = req.body
+  let { params } = rest
+  if (typeof params === 'string') {
+    params = JSON.parse(params)
+  }
   try {
-    await Email.build().sendEmail(to, subject, content, params)
+    await Email.build().sendEmail(to, subject, content, req.file ? {
+      filename: req.file.originalname,
+      content: req.file.buffer
+    } : null, params)
   } catch (error) {
     return res.status(500).send({
       ntap: false,

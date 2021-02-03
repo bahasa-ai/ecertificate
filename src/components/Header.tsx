@@ -22,6 +22,7 @@ const Header: React.FC = () => {
       </Space>
       <StyledMenu mode="horizontal" theme="dark" selectedKeys={history.location.pathname.includes('application') ? ['myapps'] : undefined} >
         <Menu.Item key="email" onClick={() => to('/email')}>Email Sender</Menu.Item>
+        <Menu.Item key="ecert" onClick={() => to('/ecertificate')}>Certificate</Menu.Item>
         <Menu.Item key="github" onClick={() => to('https://github.com/bahasa-ai/ecertificate')}><GithubOutlined /> GitHub</Menu.Item>
       </StyledMenu>
     </StyledHeader>

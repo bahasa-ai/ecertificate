@@ -8,7 +8,8 @@ import Header from '../../components/Header'
 
 const EmailSender: React.FC = () => {
   const [form] = useForm()
-  const [file, setFile] = useState<any>()
+  const [fileCsv, setFileCsv] = useState<any>()
+  const [attachment, setAttachment] = useState<any>()
   const [bulk, setBulk] = useState<any>()
   const [processing, setProcessing] = useState<boolean>(false)
   const [bulkResult, setBulkResult] = useState<any>()
@@ -25,8 +26,20 @@ const EmailSender: React.FC = () => {
       for (const recipient of bulk) {
         const { email, ...params } = recipient
         try {
-          await axios.post('/api/send', {
-            to: email, subject, content, params: params || {}
+          const data = new FormData()
+          data.append('to', email)
+          data.append('subject', subject)
+          data.append('content', content)
+          if (params) {
+            data.append('params', JSON.stringify(params))
+          }
+          if (attachment) {
+            data.append('file', attachment)
+          }
+          await axios.post('/api/send', data, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
           })
           result.push({ success: true, email })
         } catch (error) {
@@ -37,31 +50,49 @@ const EmailSender: React.FC = () => {
       setProcessing(false)
     } else {
       try {
-        await axios.post('/api/send', {
-          to, subject, content, params: params?.reduce((res: any, p: { key: string, value: string }) => ({ ...res, [p.key]: p.value }), {}) || {}
+        const data = new FormData()
+        data.append('to', to)
+        data.append('subject', subject)
+        data.append('content', content)
+        if (params) {
+          data.append('params', JSON.stringify(params?.reduce((res: any, p: { key: string, value: string }) => ({ ...res, [p.key]: p.value }), {})))
+        }
+        if (attachment) {
+          data.append('file', attachment)
+        }
+        await axios.post('/api/send', data, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
         })
         setProcessing(false)
         return message.success('Sent!')
       } catch (error) {
+        console.error(error)
         setProcessing(false)
-        return message.error(error?.response.data?.error || `Failed to send to ${to}`)
+        return message.error(error?.response?.data?.error || `Failed to send to ${to}`)
       }
     }
   }
 
   const importCsv = (file: any) => {
-    setFile(file)
+    setFileCsv(file)
     const reader = new FileReader()
     reader.onload = () => {
       csv({ noheader: false }).fromString(reader.result as string).then(result => {
         if (!result?.[0].email) {
-          setFile(undefined)
+          setFileCsv(undefined)
           return message.error('CSV format not valid')
         }
         setBulk(result)
       })
     }
     reader.readAsText(file)
+    return false
+  }
+
+  const beforeSetAttachment = (file: any) => {
+    setAttachment(file)
     return false
   }
 
@@ -86,6 +117,11 @@ const EmailSender: React.FC = () => {
               </Form.Item>
               <Form.Item name="content" label="Content">
                 <Input.TextArea rows={15} />
+              </Form.Item>
+              <Form.Item>
+                <Upload beforeUpload={file => beforeSetAttachment(file)} showUploadList={false}>
+                  <Button icon={<UploadOutlined />}> {attachment?.name || 'Select attachment' }</Button>
+                </Upload>
               </Form.Item>
               <Form.List name="params">
                 {(fields, { add, remove }) =>
@@ -114,7 +150,7 @@ const EmailSender: React.FC = () => {
               <Divider>Bulk Action</Divider>
               <Form.Item>
                 <Upload beforeUpload={file => importCsv(file)} showUploadList={false}>
-                  <Button icon={<UploadOutlined />}> {file?.name || 'Import CSV' }</Button>
+                  <Button icon={<UploadOutlined />}> {fileCsv?.name || 'Import CSV' }</Button>
                 </Upload>
               </Form.Item>
             </Col>
