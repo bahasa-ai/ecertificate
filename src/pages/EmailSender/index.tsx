@@ -83,6 +83,7 @@ const EmailSender: React.FC = () => {
       setProcessing(false)
       return message.error('Please fill the subject and content!')
     }
+    message.info('Sending... Please don\'t close your browser!')
     const certTextStyles = {
       fontSize: certFontSize,
       paddingTop: `${certPaddingTop}px`,
