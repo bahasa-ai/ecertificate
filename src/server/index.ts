@@ -28,13 +28,13 @@ app.post('/api/send', upload.single('file'), async (req, res) => {
     } : null, params)
   } catch (error) {
     return res.status(500).send({
-      ntap: false,
+      success: false,
       error: error.toString(),
       payload: req.body
     })
   }
   return res.send({
-    ntap: true
+    success: true
   })
 })
 
