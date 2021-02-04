@@ -46,7 +46,7 @@ app.listen('6996', () => console.log('running at :6996...'))
 Email.build({
   host: process.env.EMAIL_SMTP_HOST,
   port: Number(process.env.EMAIL_SMTP_PORT),
-  from: process.env.EMAIL_FROM || 'not-reply@dev.otorisasi.com',
+  from: process.env.EMAIL_FROM,
   secure: true,
   auth: {
     user: process.env.EMAIL_SMTP_USER,
