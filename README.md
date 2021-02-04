@@ -8,7 +8,7 @@ A service for preparing the biggest event with features:
  - e-certificate generator with auto send to email,
  - etc
 
-## Guide Started
+## Getting Started
 
  0. Give this repo a star and clone
  0. Copy `.env-example` to `.env` and fill the [variables](#environment-variables)
