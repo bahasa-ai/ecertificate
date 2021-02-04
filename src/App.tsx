@@ -1,11 +1,10 @@
 import { Layout } from 'antd'
 import 'antd/dist/antd.css'
 import React from 'react'
-import { Route, Switch } from 'react-router-dom'
+import { Redirect, Route, Switch } from 'react-router-dom'
 import './App.css'
 import Ecertificate from './pages/Ecertificate'
 import EmailSender from './pages/EmailSender'
-import Home from './pages/Home'
 
 function App(): any {
   return (
@@ -13,7 +12,9 @@ function App(): any {
       <Switch>
         <Route path="/email" exact component={EmailSender} />
         <Route path="/ecertificate" component={Ecertificate} />
-        <Route path="/" exact component={Home} />
+        <Route path="/">
+          <Redirect to="/email" />
+        </Route>
       </Switch>
     </Layout>
   )

@@ -33,9 +33,7 @@ app.post('/api/send', upload.single('file'), async (req, res) => {
       payload: req.body
     })
   }
-  return res.send({
-    success: true
-  })
+  return res.send({ success: true })
 })
 
 app.use(serveStatic(path.join(__dirname, '..', 'build')))
