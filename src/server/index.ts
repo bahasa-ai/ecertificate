@@ -40,7 +40,7 @@ app.use(serveStatic(path.join(__dirname, '..', 'build')))
 app.use((_, res) => res.sendFile(path.join(__dirname, '..', 'build', 'index.html')))
 
 const host = process.env.HOST || '0.0.0.0'
-const port = process.env.PORT || '6969'
+const port = parseInt(process.env.PORT || '6969')
 app.listen(port, host, () => console.log(`running at ${host}:${port} ...`))
 
 Email.build({
