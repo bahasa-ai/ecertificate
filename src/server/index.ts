@@ -39,7 +39,9 @@ app.post('/api/send', upload.single('file'), async (req, res) => {
 app.use(serveStatic(path.join(__dirname, '..', 'build')))
 app.use((_, res) => res.sendFile(path.join(__dirname, '..', 'build', 'index.html')))
 
-app.listen('6996', () => console.log('running at :6996...'))
+const host = process.env.HOST || '0.0.0.0'
+const port = process.env.PORT || '6969'
+app.listen(port, host, () => console.log(`running at ${host}:${port} ...`))
 
 Email.build({
   host: process.env.EMAIL_SMTP_HOST,
